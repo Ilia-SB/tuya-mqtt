@@ -313,17 +313,13 @@ class TuyaDevice {
 
     // Process text based Tuya commands via DPS key command topics
     processDpsKeyCommand(message, dpsKey) {
-        if (utils.isJsonString(message)) {
-            debugCommand('Individual DPS command topics do not accept JSON values')
-        } else {
-            const dpsMessage = this.parseDpsMessage(message)
-            debugCommand('Received command for DPS'+dpsKey+': ', message)
-            const command = {
-                dps: dpsKey,
-                set: dpsMessage
-            }
-            this.set(command)
+        const dpsMessage = this.parseDpsMessage(message)
+        debugCommand('Received command for DPS'+dpsKey+': ', message)
+        const command = {
+            dps: dpsKey,
+            set: dpsMessage
         }
+        this.set(command)
     }
 
     // Parse string message into boolean and number types
