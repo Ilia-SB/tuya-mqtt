@@ -63,7 +63,7 @@ function initDevices(configDevices, mqttClient) {
                 mqttClient: mqttClient,
                 topic: CONFIG.topic
             }
-            const newSubDevice = new GenericPassiveSubDevice(deviceInfo)
+            const newSubDevice = new GenericPassiveSubDevice(newDevice, deviceInfo)
             debug('Added subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
             newDevice.subDevices[configSubDevice.cid] = newSubDevice
         }
