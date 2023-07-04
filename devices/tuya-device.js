@@ -143,13 +143,13 @@ class TuyaDevice {
             const key = this.deviceTopics[topic].key
             if (!this.dps[key]) { this.dps[key] = {} }
             try {
-                this.dps[key].val = await this.device.get({"dps": key})
-                this.dps[key].updated = true
-                debug(' Updated dps ' + key)
+                debug('Updating dps ' + key)
+                this.device.get({"dps": key}).then(status => debug('Got result for dps ' + key))
             } catch {
                 debugError('Could not get value for device DPS key '+key)
             }
         }
+        debug('getStates loop completed')
         this.connected = true
         // Force topic update now that all states are fully syncronized
         this.publishTopics()
