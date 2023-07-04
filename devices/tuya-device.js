@@ -18,7 +18,8 @@ class TuyaDevice {
         // Build TuyAPI device options from device config info
         this.options = {
             id: this.config.id,
-            key: this.config.key
+            key: this.config.key,
+            issueGetOnConnect: false
         }
         if (this.config.name) { this.options.name = this.config.name.toLowerCase().replace(/\s|\+|#|\//g,'_') }
         if (this.config.ip) { 
@@ -123,7 +124,6 @@ class TuyaDevice {
                     debug('Received JSON data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
                 } else {
                     debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
-                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data))
                 }
                 this.updateState(data)
             } else {
@@ -138,21 +138,17 @@ class TuyaDevice {
     async getStates() {
         debug('getStates() for ' + this.toString())
         // Suppress topic updates while syncing device state with cached state
-        this.connected = false
         for (let topic in this.deviceTopics) {
             const key = this.deviceTopics[topic].key
             if (!this.dps[key]) { this.dps[key] = {} }
             try {
                 debug('Updating dps ' + key)
-                this.device.get({"dps": key}).then(status => debug('Got result for dps ' + key))
+                this.device.get({dps: key})
             } catch {
                 debugError('Could not get value for device DPS key '+key)
             }
         }
         debug('getStates loop completed')
-        this.connected = true
-        // Force topic update now that all states are fully syncronized
-        this.publishTopics()
     }
 
     // Update cached DPS values on data updates
