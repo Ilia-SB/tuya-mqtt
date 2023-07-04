@@ -159,6 +159,7 @@ class TuyaDevice {
             for (let key in data.dps) {
                 // Only update if the received value is different from previous value
                 if (this.dps[key] !== data.dps[key]) {
+                    debug(this.dps[key] + " <> " + data.dps[key])
                     this.dps[key] = {
                         'val': data.dps[key],
                         'updated': true
