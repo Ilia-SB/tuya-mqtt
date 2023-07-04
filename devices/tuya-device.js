@@ -13,6 +13,7 @@ class TuyaDevice {
         this.config = deviceInfo.configDevice
         this.mqttClient = deviceInfo.mqttClient
         this.topic = deviceInfo.topic
+        this.connected = false
 
         // Build TuyAPI device options from device config info
         this.options = {
@@ -69,6 +70,7 @@ class TuyaDevice {
             // Wait one second to check if device is really connected before initializing
             await utils.sleep(1)
             if (this.device.isConnected()) {
+                this.connected = ture;
                 debug('Connected to device ' + this.toString())
                 this.heartbeatsMissed = 0
                 this.publishMqtt(this.baseTopic+'status', 'online')
