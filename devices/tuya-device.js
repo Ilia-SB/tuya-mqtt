@@ -223,7 +223,7 @@ class TuyaDevice {
 
     // Publish all dps-values to topic
     publishDpsTopics() {
-        debug('publishDpsTopics')
+        debug('publishDpsTopics()')
         try {
             if (!Object.keys(this.dps).length) { return }
 
@@ -235,6 +235,9 @@ class TuyaDevice {
                 if (this.dps[key].updated) {
                     data[key] = this.dps[key].val
                 }
+            }
+            if (data == {}) {
+                return;
             }
             data = JSON.stringify(data)
             const dpsStateTopic = dpsTopic + '/state'
