@@ -134,7 +134,7 @@ class TuyaDevice {
 
     // Get and update cached values of all configured/known dps value for device
     async getStates() {
-        debug('getStates()')
+        debug('getStates() for ' + this.toString())
         // Suppress topic updates while syncing device state with cached state
         this.connected = false
         for (let topic in this.deviceTopics) {
@@ -155,6 +155,7 @@ class TuyaDevice {
 
     // Update cached DPS values on data updates
     updateState(data) {
+        debug('updateState() for ' + this.toString())
         if (typeof data.dps != 'undefined') {
             // Update cached device state data
             for (let key in data.dps) {
@@ -164,6 +165,7 @@ class TuyaDevice {
                         'val': data.dps[key],
                         'updated': true
                     }
+                    debug('Update dps ' + key)
                 }
                 if (this.isRgbtwLight) {
                     if (this.config.hasOwnProperty('dpsColor') && this.config.dpsColor == key) {
@@ -179,7 +181,11 @@ class TuyaDevice {
             this.cid = cid
             if (this.connected) {
                 this.publishTopics()
+            } else {
+                debugError('Device not yet connected')
             }
+        } else {
+            debugError('No dps info in data')
         }
     }
 
