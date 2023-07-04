@@ -55,6 +55,7 @@ function initDevices(configDevices, mqttClient) {
     for (let configDevice of configDevices) {
         const newDevice = getDevice(configDevice, mqttClient)
         tuyaDevices.push(newDevice)
+        debug('Added device: ' + newDevice.toString())
     }
 }
 

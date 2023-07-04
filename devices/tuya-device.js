@@ -59,40 +59,6 @@ class TuyaDevice {
         // Create the new Tuya Device
         this.device = new TuyAPI(JSON.parse(JSON.stringify(this.options)))
 
-        // Some new devices don't send data updates if the app isn't open.
-        // These devices need to be "forced" to send updates. You can do so by calling refresh() (see tuyapi docs), which will emit a dp-refresh event.
-        this.device.on('dp-refresh', (data) => {
-            if (typeof data === 'object') {
-                if (data.cid) {
-                    debug('Received dp-refresh data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
-                } else {
-                    debug('Received dp-refresh data from device '+this.options.id+' ->', JSON.stringify(data.dps))
-                }
-                this.updateState(data)
-            } else {
-                if (data !== 'json obj data unvalid') {
-                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
-                }
-            }
-        })
-
-        // Listen for device data and call update DPS function if valid
-        this.device.on('data', (data) => {
-            if (typeof data === 'object') {
-                if (data.cid) {
-                    debug('Received JSON data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
-                } else {
-                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
-                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data))
-                }
-                this.updateState(data)
-            } else {
-                if (data !== 'json obj data unvalid') {
-                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
-                }
-            }
-        })
-
         // Attempt to find/connect to device and start heartbeat monitor
         this.connectDevice()
         this.monitorHeartbeat()
@@ -130,10 +96,45 @@ class TuyaDevice {
         this.device.on('heartbeat', () => {
             this.heartbeatsMissed = 0
         })
+
+        // Some new devices don't send data updates if the app isn't open.
+        // These devices need to be "forced" to send updates. You can do so by calling refresh() (see tuyapi docs), which will emit a dp-refresh event.
+        this.device.on('dp-refresh', (data) => {
+            if (typeof data === 'object') {
+                if (data.cid) {
+                    debug('Received dp-refresh data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
+                } else {
+                    debug('Received dp-refresh data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                }
+                this.updateState(data)
+            } else {
+                if (data !== 'json obj data unvalid') {
+                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
+                }
+            }
+        })
+
+        // Listen for device data and call update DPS function if valid
+        this.device.on('data', (data) => {
+            if (typeof data === 'object') {
+                if (data.cid) {
+                    debug('Received JSON data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
+                } else {
+                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data))
+                }
+                this.updateState(data)
+            } else {
+                if (data !== 'json obj data unvalid') {
+                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
+                }
+            }
+        })
     }
 
     // Get and update cached values of all configured/known dps value for device
     async getStates() {
+        debug('getStates()')
         // Suppress topic updates while syncing device state with cached state
         this.connected = false
         for (let topic in this.deviceTopics) {
@@ -142,6 +143,7 @@ class TuyaDevice {
             try {
                 this.dps[key].val = await this.device.get({"dps": key})
                 this.dps[key].updated = true
+                debug(' Updated dps ' + key)
             } catch {
                 debugError('Could not get value for device DPS key '+key)
             }
@@ -183,6 +185,7 @@ class TuyaDevice {
 
     // Publish device specific state topics
     publishTopics() {
+        debug('publishTopics()')
         // Don't publish if device is not connected
         if (!this.connected) return
 
@@ -196,8 +199,10 @@ class TuyaDevice {
                 if (state) { 
                     if (this.cid) {
                         this.publishMqtt(this.baseTopic + this.cid + '/' + topic, state, true)
+                        debug('Published: ' + state + ' to topic: ' + this.baseTopic + this.cid + '/' + topic)
                     } else {
                         this.publishMqtt(this.baseTopic + topic, state, true)
+                        debug('Published: ' + state + ' to topic: ' + this.baseTopic + topic)
                     }
                 }
             }
@@ -209,6 +214,7 @@ class TuyaDevice {
 
     // Publish all dps-values to topic
     publishDpsTopics() {
+        debug('publishDpsTopics')
         try {
             if (!Object.keys(this.dps).length) { return }
 
