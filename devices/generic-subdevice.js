@@ -47,3 +47,5 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.getStates()
     }
 }
+
+module.exports = GenericPassiveSubDevice

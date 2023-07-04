@@ -62,7 +62,7 @@ function initDevices(configDevices, mqttClient) {
                 topic: CONFIG.topic
             }
             const newSubDevice = new GenericPassiveSubDevice(deviceInfo)
-            debug('Adding subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
+            debug('Added subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
             newDevice.subDevices[configSubDevice.cid] = newSubDevice
         }
         tuyaDevices.push(newDevice)
