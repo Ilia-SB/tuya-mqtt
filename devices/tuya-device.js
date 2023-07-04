@@ -158,8 +158,8 @@ class TuyaDevice {
             // Update cached device state data
             for (let key in data.dps) {
                 // Only update if the received value is different from previous value
-                if (this.dps[key] !== data.dps[key]) {
-                    debug(this.dps[key] + " <> " + data.dps[key])
+                if (this.dps[key].val !== data.dps[key]) {
+                    debug(this.dps[key].val + " <> " + data.dps[key])
                     this.dps[key] = {
                         'val': data.dps[key],
                         'updated': true
