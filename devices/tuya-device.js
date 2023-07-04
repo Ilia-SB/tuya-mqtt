@@ -41,7 +41,7 @@ class TuyaDevice {
 
         // Initialize properties to hold cached device state data
         this.dps = {}
-        this.cid = {}
+        this.subDevices = {}
         this.color = {'h': 0, 's': 0, 'b': 0}
 
         // Device friendly topics
@@ -105,11 +105,15 @@ class TuyaDevice {
         this.device.on('dp-refresh', (data) => {
             if (typeof data === 'object') {
                 if (data.cid) {
-                    debug('Received dp-refresh data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
+                    debug('Received dp-refresh data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
+                    let child = this.subDevices[data.cid]
+                    if (child) {
+                        child.setData(data);
+                    }
                 } else {
                     debug('Received dp-refresh data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                    this.updateState(data)
                 }
-                this.updateState(data)
             } else {
                 if (data !== 'json obj data unvalid') {
                     debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
@@ -121,11 +125,15 @@ class TuyaDevice {
         this.device.on('data', (data) => {
             if (typeof data === 'object') {
                 if (data.cid) {
-                    debug('Received JSON data from device '+this.options.id+' cid: '+data.cid+' ->', JSON.stringify(data.dps))
+                    debug('Received JSON data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
+                    let child = this.subDevices[data.cid]
+                    if(child) {
+                        child.setData(data);
+                    }
                 } else {
                     debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                    this.updateState(data)                    
                 }
-                this.updateState(data)
             } else {
                 if (data !== 'json obj data unvalid') {
                     debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
@@ -180,8 +188,7 @@ class TuyaDevice {
                     }
                 }
             }
-            let cid = data.cid
-            this.cid = cid
+
             if (this.connected) {
                 this.publishTopics()
             } else {
@@ -206,13 +213,8 @@ class TuyaDevice {
             if (this.dps[key] && this.dps[key].updated) {
                 const state = this.getTopicState(deviceTopic, this.dps[key].val)
                 if (state) { 
-                    if (this.cid) {
-                        this.publishMqtt(this.baseTopic + this.cid + '/' + topic, state, true)
-                        debug('Published: ' + state + ' to topic: ' + this.baseTopic + this.cid + '/' + topic)
-                    } else {
-                        this.publishMqtt(this.baseTopic + topic, state, true)
-                        debug('Published: ' + state + ' to topic: ' + this.baseTopic + topic)
-                    }
+                    this.publishMqtt(this.baseTopic + topic, state, true)
+                    debug('Published: ' + state + ' to topic: ' + this.baseTopic + topic)
                 }
             }
         }
