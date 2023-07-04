@@ -70,8 +70,8 @@ class TuyaDevice {
             // Wait one second to check if device is really connected before initializing
             await utils.sleep(1)
             if (this.device.isConnected()) {
-                this.connected = ture;
                 debug('Connected to device ' + this.toString())
+                this.connected = true;
                 this.heartbeatsMissed = 0
                 this.publishMqtt(this.baseTopic+'status', 'online')
                 this.init()
