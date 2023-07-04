@@ -236,7 +236,7 @@ class TuyaDevice {
                     data[key] = this.dps[key].val
                 }
             }
-            if (data == {}) {
+            if (Object.keysd(data).length === 0) {
                 return;
             }
             data = JSON.stringify(data)
