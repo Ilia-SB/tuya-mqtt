@@ -58,6 +58,7 @@ function initDevices(configDevices, mqttClient) {
         debug('Found device config for ' + configDevice.name)
         debug('Looking for subdevices')
         for (let configSubDevice of configDevice.subDevices) {
+            configSubDevice.key = configDevice.key
             const deviceInfo = {
                 configDevice: configSubDevice,
                 mqttClient: mqttClient,
