@@ -57,6 +57,11 @@ class GenericPassiveSubDevice extends TuyaDevice {
         debug(JSON.stringify(options))
         this.parent.requestData(options)
     }
+
+    processCommand(message, commandTopic) {
+        debug('Passive subdevices do not accept commands')
+        return
+    }
 }
 
 module.exports = GenericPassiveSubDevice
