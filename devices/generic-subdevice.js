@@ -54,7 +54,6 @@ class GenericPassiveSubDevice extends TuyaDevice {
                 debug('Restored state for ' + this.toString())
                 debug(dps)
                 this.publishTopics()
-                this.publishDpsTopics()
             } catch (e) {
                 debugError('Error restoring persist data:')
                 debugError(e)
