@@ -143,7 +143,6 @@ class TuyaDevice {
         debug('getStates() for ' + this.toString())
         for (let topic in this.deviceTopics) {
             const key = this.deviceTopics[topic].key
-            if (!this.dps[key]) { this.dps[key] = {} }
             try {
                 debug('Updating dps ' + key)
                 this.requestData({dps: key})
@@ -168,6 +167,7 @@ class TuyaDevice {
         if (typeof data.dps != 'undefined') {
             // Update cached device state data
             for (let key in data.dps) {
+                if (!this.dps[key]) { this.dps[key] = {} }
                 // Only update if the received value is different from previous value
                 if (this.dps[key].val !== data.dps[key]) {
                     debug(this.dps[key].val + " <> " + data.dps[key])
