@@ -7,6 +7,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
     //data will be passed from parent based on cid value.
     constructor(parent, deviceInfo) {
         super(deviceInfo);
+        this.cid = deviceInfo.cid
         this.parent = parent;
         this.connected = false;
     }
@@ -33,7 +34,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.updateState(data)
     }
 
-    async init() {
+    init() {
         debug('Generic passive subdevice init()')
         this.deviceData.mdl = 'Generic Subdevice'
 
@@ -43,17 +44,16 @@ class GenericPassiveSubDevice extends TuyaDevice {
             this.deviceTopics = this.config.template
         } else {
             // Try to get schema to at least know what DPS keys to get initial update
-            const result = await this.parent.device.get({schema: true, cid: this.subDevices})
-            if (!utils.isJsonString(result)) {
-                if (result === 'Schema for device not available') {
-                    debug('Device id ' + this.config.id + ' failed schema discovery and no custom template defined')
-                    debug('Cannot get initial DPS state data for device ' + this.options.name + ' but data updates will be publish')
-                }
-            }
+            this.requestData({schema: true})
         }
 
         // Get initial states and start publishing topics
         this.getStates()
+    }
+
+    requestData(options) {
+        options.cid = this.cid
+        this.parent.requestData(options)
     }
 }
 

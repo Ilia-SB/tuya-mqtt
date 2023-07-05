@@ -3,7 +3,7 @@ const debug = require('debug')('tuya-mqtt:device')
 const utils = require('../lib/utils')
 
 class GenericDevice extends TuyaDevice {
-    async init() {
+    init() {
         debug('Generic device init()')
         this.deviceData.mdl = 'Generic Device'
 
@@ -13,17 +13,16 @@ class GenericDevice extends TuyaDevice {
             this.deviceTopics = this.config.template
         } else {
             // Try to get schema to at least know what DPS keys to get initial update
-            const result = await this.device.get({"schema": true})
-            if (!utils.isJsonString(result)) {
-                if (result === 'Schema for device not available') {
-                    debug('Device id '+this.config.id+' failed schema discovery and no custom template defined')
-                    debug('Cannot get initial DPS state data for device '+this.options.name+' but data updates will be publish')
-                }
-            }
+            this.device.get({"schema": true})
         }
 
         // Get initial states and start publishing topics
         this.getStates()
+    }
+
+    requestData(options) {
+        debug('Requesting data for child: ' + options.toString())
+        this.device.get(options);
     }
 }
 
