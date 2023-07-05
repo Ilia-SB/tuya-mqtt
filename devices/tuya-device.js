@@ -95,8 +95,8 @@ class TuyaDevice {
             this.connected = true;
             this.heartbeatsMissed = 0
             this.monitorHeartbeat()
-            for (let subDevice of this.subDevices) {
-                subDevice.onConnected()
+            for (let cid of Object.keys(this.subDevices)) {
+                this.subDevices[cid].onConnected()
             }
             this.publishMqtt(this.baseTopic + 'status', 'online')
             this.init()
@@ -106,8 +106,8 @@ class TuyaDevice {
     async onDisconnected() {
         debug('Disconnected from device ' + this.toString())
         this.connected = false
-        for (let subDevice of this.subDevices) {
-            subDevice.onConnected()
+        for (let cid of Object.keys(this.subDevices)) {
+            this.subDevices[cid].onDisconnected()
         }
         this.publishMqtt(this.baseTopic+'status', 'offline')
         await utils.sleep(5)
@@ -127,7 +127,7 @@ class TuyaDevice {
                     debugError('Subdevice with cid ' + data.cid + ' not found.')
                 }
             } else {
-                debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                debug('Received JSON data from device ' + this.options.id + ' ->', JSON.stringify(data.dps))
                 this.updateState(data)                    
             }
         } else {
@@ -658,6 +658,7 @@ class TuyaDevice {
     
     // Simple function to monitor heartbeats to determine if 
     monitorHeartbeat() {
+        debug('Starting heartbeat monitoring')
         setInterval(async () => {
             if (this.connected) {
                 if (this.heartbeatsMissed > 3) {
