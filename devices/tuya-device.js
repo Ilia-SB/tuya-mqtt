@@ -195,7 +195,8 @@ class TuyaDevice {
 
             if (this.persist) {
                 if (updated) {
-                    dpsData = JSON.stringify(this.dps)
+                    debug('Saving persist data for ' + this.toString)
+                    let dpsData = JSON.stringify(this.dps)
                     fs.writeFile('./' + this.cid, dpsData, error => {
                         debugError('Error saving persist file: ' + error)
                     })
