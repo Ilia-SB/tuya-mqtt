@@ -7,7 +7,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
     //data will be passed from parent based on cid value.
     constructor(parent, deviceInfo) {
         super(deviceInfo);
-        this.cid = deviceInfo.cid
+        this.cid = deviceInfo.configDevice.cid
         this.parent = parent;
         this.connected = false;
     }
