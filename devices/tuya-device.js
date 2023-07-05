@@ -95,11 +95,11 @@ class TuyaDevice {
             this.connected = true;
             this.heartbeatsMissed = 0
             this.monitorHeartbeat()
+            this.publishMqtt(this.baseTopic + 'status', 'online')
+            this.init()
             for (let cid of Object.keys(this.subDevices)) {
                 this.subDevices[cid].onConnected()
             }
-            this.publishMqtt(this.baseTopic + 'status', 'online')
-            this.init()
         }
     }
 
@@ -122,7 +122,8 @@ class TuyaDevice {
                 debug('Received JSON data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
                 let subdevice = this.subDevices[data.cid]
                 if(subdevice) {
-                    subdevice.setData(data);
+                    debug('Passing data to subdevice')
+                    subdevice.onData(data);
                 } else {
                     debugError('Subdevice with cid ' + data.cid + ' not found.')
                 }
@@ -155,7 +156,8 @@ class TuyaDevice {
 
     //Wrapper for device.get
     requestData(options) {
-        debug('Requesting data:' + options.toString())
+        debug('Requesting data:')
+        debug(JSON.stringify(options))
         this.device.get(options)
     }
 
