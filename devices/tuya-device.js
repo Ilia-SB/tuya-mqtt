@@ -1,4 +1,5 @@
 const TuyAPI = require('tuyapi')
+const fs = require('fs')
 const { evaluate } = require('mathjs')
 const utils = require('../lib/utils')
 const debug = require('debug')('tuya-mqtt:tuyapi')
@@ -162,6 +163,7 @@ class TuyaDevice {
 
     // Update cached DPS values on data updates
     updateState(data) {
+        let updated = false
         debug('updateState() for ' + this.toString())
         if (typeof data.dps != 'undefined') {
             // Update cached device state data
@@ -174,6 +176,7 @@ class TuyaDevice {
                         'updated': true
                     }
                     debug('Update dps ' + key)
+                    updated = true
                 } else {
                     this.dps[key] = {
                         'updated': false
@@ -187,6 +190,15 @@ class TuyaDevice {
                         // Allows overriding saturation value to 0% for white mode for the HSB device topics
                         this.dps[this.config.dpsColor].updated = true
                     }
+                }
+            }
+
+            if (this.persist) {
+                if (updated) {
+                    dpsData = JSON.stringify(this.dps)
+                    fs.writeFile('./' + this.cid, dpsData, error => {
+                        debugError('Error saving persist file: ' + error)
+                    })
                 }
             }
 

@@ -1,6 +1,7 @@
 const TuyaDevice = require('./tuya-device')
 const debug = require('debug')('tuya-mqtt:device')
 const utils = require('../lib/utils')
+const fs = require('fs')
 
 class GenericPassiveSubDevice extends TuyaDevice {
     //Passive device like door sensor which is sleeping most of the time. No direct connection will be established
@@ -10,6 +11,11 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.cid = deviceInfo.configDevice.cid
         this.parent = parent;
         this.connected = false;
+        if(deviceInfo.configDevice.persist) {
+            this.persist = deviceInfo.configDevice.persist
+        } else {
+            this.persist = false;
+        }
     }
 
     onConnected() {
@@ -20,9 +26,11 @@ class GenericPassiveSubDevice extends TuyaDevice {
     }
 
     onDisconnected() {
-        this.connected = false;
-        debug('Disconnected from device ' + this.toString())
-        this.publishMqtt(this.baseTopic + 'status', 'offline')
+        if(this.connected) {
+            this.connected = false;
+            debug('Disconnected from device ' + this.toString())
+            this.publishMqtt(this.baseTopic + 'status', 'offline')
+        }
     }
 
     monitorHeartbeat() {
@@ -36,6 +44,20 @@ class GenericPassiveSubDevice extends TuyaDevice {
 
     init() {
         debug('Generic passive subdevice init()')
+        
+        // Restore saved state if needed
+        if(this.persist) {
+            try {
+                dps = fs.readFileSync('./' + this.cid, 'utf8')
+                this.dps = JSON.parse(dps)
+                debug('Restored state for ' + this.toString())
+                debug(dps)
+            } catch (e) {
+                debugError('Persist file not found!')
+                debugError(e)
+            }
+        }
+
         this.deviceData.mdl = 'Generic Subdevice'
 
         // Check if custom template in device config
