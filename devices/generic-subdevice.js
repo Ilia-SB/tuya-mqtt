@@ -49,12 +49,12 @@ class GenericPassiveSubDevice extends TuyaDevice {
         // Restore saved state if needed
         if(this.persist) {
             try {
-                dps = fs.readFileSync('./' + this.cid, 'utf8')
+                let dps = fs.readFileSync('./' + this.cid, 'utf8')
                 this.dps = JSON.parse(dps)
                 debug('Restored state for ' + this.toString())
                 debug(dps)
             } catch (e) {
-                debugError('Persist file not found!')
+                debugError('Error restoring persist data:')
                 debugError(e)
             }
         }
