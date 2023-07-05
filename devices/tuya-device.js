@@ -61,32 +61,11 @@ class TuyaDevice {
         // Create the new Tuya Device
         this.device = new TuyAPI(JSON.parse(JSON.stringify(this.options)))
 
-        // Attempt to find/connect to device and start heartbeat monitor
-        this.connectDevice()
-        this.monitorHeartbeat()
-
         // On connect perform device specific init
-        this.device.on('connected', async () => {
-            // Sometimes TuyAPI reports connection even on socket error
-            // Wait one second to check if device is really connected before initializing
-            await utils.sleep(1)
-            if (this.device.isConnected()) {
-                debug('Connected to device ' + this.toString())
-                this.connected = true;
-                this.heartbeatsMissed = 0
-                this.publishMqtt(this.baseTopic+'status', 'online')
-                this.init()
-            }
-        })
+        this.device.on('connected', () => this.onConnected())
 
         // On disconnect perform device specific disconnect
-        this.device.on('disconnected', async () => {
-            this.connected = false
-            this.publishMqtt(this.baseTopic+'status', 'offline')
-            debug('Disconnected from device ' + this.toString())
-            await utils.sleep(5)
-            this.reconnect()
-        })
+        this.device.on('disconnected', () => this.onDisconnected())
 
         // On connect error call reconnect
         this.device.on('error', async (err) => {
@@ -102,44 +81,60 @@ class TuyaDevice {
 
         // Some new devices don't send data updates if the app isn't open.
         // These devices need to be "forced" to send updates. You can do so by calling refresh() (see tuyapi docs), which will emit a dp-refresh event.
-        this.device.on('dp-refresh', (data) => {
-            if (typeof data === 'object') {
-                if (data.cid) {
-                    debug('Received dp-refresh data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
-                    let child = this.subDevices[data.cid]
-                    if (child) {
-                        child.setData(data);
-                    }
-                } else {
-                    debug('Received dp-refresh data from device '+this.options.id+' ->', JSON.stringify(data.dps))
-                    this.updateState(data)
-                }
-            } else {
-                if (data !== 'json obj data unvalid') {
-                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
-                }
-            }
-        })
+        this.device.on('dp-refresh', (data) => this.onData(data))
 
         // Listen for device data and call update DPS function if valid
-        this.device.on('data', (data) => {
-            if (typeof data === 'object') {
-                if (data.cid) {
-                    debug('Received JSON data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
-                    let child = this.subDevices[data.cid]
-                    if(child) {
-                        child.setData(data);
-                    }
+        this.device.on('data', (data) => this.onData(data))
+    }
+
+    async onConnected() {
+        if (this.device.isConnected()) {
+            debug('Sleep')
+            await utils.sleep(5)
+            debug('Connected to device ' + this.toString())
+            this.connected = true;
+            this.heartbeatsMissed = 0
+            this.monitorHeartbeat()
+            for (let subDevice of this.subDevices) {
+                subDevice.onConnected()
+            }
+            this.publishMqtt(this.baseTopic + 'status', 'online')
+            this.init()
+        }
+    }
+
+    async onDisconnected() {
+        debug('Disconnected from device ' + this.toString())
+        this.connected = false
+        for (let subDevice of this.subDevices) {
+            subDevice.onConnected()
+        }
+        this.publishMqtt(this.baseTopic+'status', 'offline')
+        await utils.sleep(5)
+        this.reconnect()
+    }
+
+    // Process data received from device
+    onData(data) {
+        if (typeof data === 'object') {
+            // if the data contains cid then pass it to subdevice
+            if (data.cid) {
+                debug('Received JSON data from device ' + this.options.id + ' for cid: ' + data.cid + ' ->', JSON.stringify(data.dps))
+                let subdevice = this.subDevices[data.cid]
+                if(subdevice) {
+                    subdevice.setData(data);
                 } else {
-                    debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
-                    this.updateState(data)                    
+                    debugError('Subdevice with cid ' + data.cid + ' not found.')
                 }
             } else {
-                if (data !== 'json obj data unvalid') {
-                    debug('Received string data from device '+this.options.id+' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
-                }
+                debug('Received JSON data from device '+this.options.id+' ->', JSON.stringify(data.dps))
+                this.updateState(data)                    
             }
-        })
+        } else {
+            if (data !== 'json obj data unvalid') {
+                debug('Received string data from device ' + this.options.id + ' ->', data.replace(/[^a-zA-Z0-9 ]/g, ''))
+            }
+        }
     }
 
     // Get and update cached values of all configured/known dps value for device

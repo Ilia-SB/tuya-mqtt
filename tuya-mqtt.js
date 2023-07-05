@@ -64,12 +64,15 @@ function initDevices(configDevices, mqttClient) {
                 mqttClient: mqttClient,
                 topic: CONFIG.topic
             }
-            const newSubDevice = new GenericPassiveSubDevice(newDevice, deviceInfo)
-            debug('Added subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
-            newDevice.subDevices[configSubDevice.cid] = newSubDevice
+            if(configSubDevice.passive) {
+                const newSubDevice = new GenericPassiveSubDevice(newDevice, deviceInfo)
+                debug('Added passive subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
+                newDevice.subDevices[configSubDevice.cid] = newSubDevice
+            }
         }
         tuyaDevices.push(newDevice)
         debug('Added device: ' + newDevice.toString())
+        newDevice.connectDevice();
     }
 }
 

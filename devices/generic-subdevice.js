@@ -11,15 +11,21 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.connected = false;
     }
 
-    connectDevice() {
-        this.connected = this.parent.connected;
+    onConnected() {
+        this.connected = true;
+        this.publishMqtt(this.baseTopic + 'status', 'online')
+    }
+
+    onDisconnected() {
+        this.connected = false;
+        this.publishMqtt(this.baseTopic + 'status', 'offline')
     }
 
     monitorHeartbeat() {
         return;
     }
 
-    setData(data) {
+    onData(data) {
         debug('Received data from parent device ' + this.parent.options.id + ' ->', JSON.stringify(data.dps));
         this.updateState(data)
     }
