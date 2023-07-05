@@ -15,6 +15,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.connected = true;
         debug('  Connected to device ' + this.toString())
         this.publishMqtt(this.baseTopic + 'status', 'online')
+        this.init()
     }
 
     onDisconnected() {
@@ -33,7 +34,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
     }
 
     async init() {
-        debug('Generic subdevice init()')
+        debug('Generic passive subdevice init()')
         this.deviceData.mdl = 'Generic Subdevice'
 
         // Check if custom template in device config
