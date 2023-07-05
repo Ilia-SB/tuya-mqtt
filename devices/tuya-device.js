@@ -76,6 +76,7 @@ class TuyaDevice {
 
         // On heartbeat reset heartbeat timer
         this.device.on('heartbeat', () => {
+            debug('Heartbeat')
             this.heartbeatsMissed = 0
         })
 
