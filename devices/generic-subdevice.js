@@ -13,11 +13,13 @@ class GenericPassiveSubDevice extends TuyaDevice {
 
     onConnected() {
         this.connected = true;
+        debug('  Connected to device ' + this.toString())
         this.publishMqtt(this.baseTopic + 'status', 'online')
     }
 
     onDisconnected() {
         this.connected = false;
+        debug('  Disconnected from device ' + this.toString())
         this.publishMqtt(this.baseTopic + 'status', 'offline')
     }
 
