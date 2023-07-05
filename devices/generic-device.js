@@ -20,10 +20,12 @@ class GenericDevice extends TuyaDevice {
         this.getStates()
     }
 
+    /*
     requestData(options) {
         debug('Requesting data for child: ' + options.toString())
         this.device.get(options);
     }
+    */
 }
 
 module.exports = GenericDevice

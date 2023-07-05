@@ -89,8 +89,6 @@ class TuyaDevice {
 
     async onConnected() {
         if (this.device.isConnected()) {
-            debug('Sleep')
-            await utils.sleep(5)
             debug('Connected to device ' + this.toString())
             this.connected = true;
             this.heartbeatsMissed = 0
