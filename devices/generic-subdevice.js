@@ -1,5 +1,6 @@
 const TuyaDevice = require('./tuya-device')
 const debug = require('debug')('tuya-mqtt:device')
+const debugError = require('debug')('tuya-mqtt:error')
 const utils = require('../lib/utils')
 const fs = require('fs')
 
