@@ -154,7 +154,7 @@ class TuyaDevice {
 
     //Wrapper for device.get
     requestData(options) {
-        debug('Requesting data:')
+        debug('Requesting data for ' + this.toString())
         debug(JSON.stringify(options))
         this.device.get(options)
     }
