@@ -219,7 +219,7 @@ class TuyaDevice {
 
     // Publish device specific state topics
     publishTopics() {
-        debug('publishTopics()')
+        debug('publishTopics() for ' + this.toString())
         // Don't publish if device is not connected
         if (!this.connected) return
 
@@ -243,7 +243,7 @@ class TuyaDevice {
 
     // Publish all dps-values to topic
     publishDpsTopics() {
-        debug('publishDpsTopics()')
+        debug('publishDpsTopics() for ' + this.toString())
         try {
             if (!Object.keys(this.dps).length) { return }
 
