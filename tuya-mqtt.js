@@ -54,8 +54,10 @@ function getDevice(configDevice, mqttClient) {
 
 function initDevices(configDevices, mqttClient) {
     for (let configDevice of configDevices) {
-        const newDevice = getDevice(configDevice, mqttClient)
         debug('Found device config for ' + configDevice.name)
+        const newDevice = getDevice(configDevice, mqttClient)
+        tuyaDevices.push(newDevice)
+        debug('Added device: ' + newDevice.toString())
         debug('Looking for subdevices')
         for (let configSubDevice of configDevice.subDevices) {
             configSubDevice.key = configDevice.key
@@ -68,10 +70,9 @@ function initDevices(configDevices, mqttClient) {
                 const newSubDevice = new GenericPassiveSubDevice(newDevice, deviceInfo)
                 debug('Added passive subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
                 newDevice.subDevices[configSubDevice.cid] = newSubDevice
+                tuyaDevices.push(newSubDevice)
             }
         }
-        tuyaDevices.push(newDevice)
-        debug('Added device: ' + newDevice.toString())
         newDevice.connectDevice();
     }
 }
