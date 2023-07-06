@@ -39,17 +39,19 @@ class GenericPassiveSubDevice extends TuyaDevice {
     }
 
     init() {
-        debug('Generic passive subdevice init()')
+        debug('Generic passive subdevice init() for ' + this.toString())
 
         this.deviceData.mdl = 'Generic Subdevice'
 
         // Check if custom template in device config
         if (this.config.hasOwnProperty('template')) {
             // Map generic DPS topics to device specific topic names
+            debug('Applying template to ' + this.toString())
             this.deviceTopics = this.config.template
         } else {
             if(!this.config.persist) {
                 // Try to get schema to at least know what DPS keys to get initial update
+                debug('Getting schema for ' + this.toString())
                 this.device.get({"schema": true})
             }
         }
