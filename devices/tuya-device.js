@@ -213,7 +213,7 @@ class TuyaDevice {
                 }
             }
 
-            if (this.persist) {
+            if (this.config.persist) {
                 if (updated) {
                     debug('Saving persist data for ' + this.toString())
                     let data = JSON.stringify(this.dps)
