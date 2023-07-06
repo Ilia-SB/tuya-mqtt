@@ -40,9 +40,6 @@ class GenericPassiveSubDevice extends TuyaDevice {
 
     init() {
         debug('Generic passive subdevice init()')
-        
-        // Restore saved state
-        super.restoreState()
 
         this.deviceData.mdl = 'Generic Subdevice'
 
@@ -51,9 +48,14 @@ class GenericPassiveSubDevice extends TuyaDevice {
             // Map generic DPS topics to device specific topic names
             this.deviceTopics = this.config.template
         } else {
-            // Try to get schema to at least know what DPS keys to get initial update
-            this.requestData({schema: true})
+            if(!this.config.persist) {
+                // Try to get schema to at least know what DPS keys to get initial update
+                this.device.get({"schema": true})
+            }
         }
+
+        // Restore saved state
+        super.restoreState()
 
         // Get initial states and start publishing topics
         this.getStates()

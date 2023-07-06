@@ -141,8 +141,8 @@ class TuyaDevice {
 
     // Restore saved state
     restoreState(){
-        debug('Restoring saved state for ' + this.toString())
         if(this.config.persist) {
+            debug('Restoring saved state for ' + this.toString())
             try {
                 let dps = fs.readFileSync('./persist/' + this.config.id, 'utf8')
                 this.dps = JSON.parse(dps)
@@ -198,11 +198,8 @@ class TuyaDevice {
                     }
                     debug('Update dps ' + key)
                     updated = true
-                } else {
-                    this.dps[key] = {
-                        'updated': false
-                    }
                 }
+
                 if (this.isRgbtwLight) {
                     if (this.config.hasOwnProperty('dpsColor') && this.config.dpsColor == key) {
                         this.updateColorState(data.dps[key])
@@ -280,6 +277,7 @@ class TuyaDevice {
                 // Only publish values if different from previous value
                 if (this.dps[key].updated) {
                     data[key] = this.dps[key].val
+                    this.dps[key].updated = false
                 }
             }
             if (Object.keys(data).length === 0) {
