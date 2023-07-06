@@ -5,6 +5,10 @@ const utils = require('../lib/utils')
 class GenericDevice extends TuyaDevice {
     init() {
         debug('Generic device init()')
+
+        // Restore saved state
+        super.restoreState()
+
         this.deviceData.mdl = 'Generic Device'
 
         // Check if custom template in device config
@@ -19,13 +23,6 @@ class GenericDevice extends TuyaDevice {
         // Get initial states and start publishing topics
         this.getStates()
     }
-
-    /*
-    requestData(options) {
-        debug('Requesting data for child: ' + options.toString())
-        this.device.get(options);
-    }
-    */
 }
 
 module.exports = GenericDevice

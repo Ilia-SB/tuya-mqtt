@@ -46,19 +46,8 @@ class GenericPassiveSubDevice extends TuyaDevice {
     init() {
         debug('Generic passive subdevice init()')
         
-        // Restore saved state if needed
-        if(this.persist) {
-            try {
-                let dps = fs.readFileSync('./' + this.cid, 'utf8')
-                this.dps = JSON.parse(dps)
-                debug('Restored state for ' + this.toString())
-                debug(dps)
-                this.publishTopics()
-            } catch (e) {
-                debugError('Error restoring persist data:')
-                debugError(e)
-            }
-        }
+        // Restore saved state
+        super.restoreState()
 
         this.deviceData.mdl = 'Generic Subdevice'
 

@@ -139,6 +139,25 @@ class TuyaDevice {
         }
     }
 
+    // Restore saved state
+    restoreState(){
+        if(this.config.persist) {
+            try {
+                let dps = fs.readFileSync('./persist/' + this.config.id, 'utf8')
+                this.dps = JSON.parse(dps)
+                debug('Restored state for ' + this.toString())
+                debug(dps)
+                for (let key of this.dps) {
+                    this.dps[key].updated = true
+                }
+                this.publishTopics()
+            } catch (e) {
+                debugError('Error restoring persist data:')
+                debugError(e)
+            }
+        }
+    }
+
     // Get and update cached values of all configured/known dps value for device
     async getStates() {
         debug('getStates() for ' + this.toString())
@@ -198,7 +217,7 @@ class TuyaDevice {
                 if (updated) {
                     debug('Saving persist data for ' + this.toString())
                     let data = JSON.stringify(this.dps)
-                    fs.writeFile('./' + this.cid, data, error => {
+                    fs.writeFile('./persist/' + this.config.id, data, error => {
                         if (error) {
                             debugError('Error saving persist file: ' + error)
                         } else {
