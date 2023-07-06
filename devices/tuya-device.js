@@ -141,13 +141,14 @@ class TuyaDevice {
 
     // Restore saved state
     restoreState(){
+        debug('Restoring saved state for ' + this.toString())
         if(this.config.persist) {
             try {
                 let dps = fs.readFileSync('./persist/' + this.config.id, 'utf8')
                 this.dps = JSON.parse(dps)
                 debug('Restored state for ' + this.toString())
                 debug(dps)
-                for (let key of this.dps) {
+                for (let key of Object.keys(this.dps)) {
                     this.dps[key].updated = true
                 }
                 this.publishTopics()
