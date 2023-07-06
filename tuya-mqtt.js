@@ -174,13 +174,13 @@ const main = async() => {
                 // Use device topic level to find matching device
                 const device = tuyaDevices.find(d => d.options.name === deviceTopicLevel || d.options.id === deviceTopicLevel)
                 switch (topicLength) {
-                    case 3:
+                    case 4:
                         device.processCommand(message, commandTopic)
                         break;
-                    case 4:
+                    case 5:
                         device.processDpsCommand(message)
                         break;
-                    case 5:
+                    case 6:
                         const dpsKey = splitTopic[topicLength-2]
                         device.processDpsKeyCommand(message, dpsKey)
                         break;
