@@ -277,7 +277,6 @@ class TuyaDevice {
                 // Only publish values if different from previous value
                 if (this.dps[key].updated) {
                     data[key] = this.dps[key].val
-                    this.dps[key].updated = false
                 }
             }
             if (Object.keys(data).length === 0) {
@@ -296,7 +295,7 @@ class TuyaDevice {
                     const data = this.dps.hasOwnProperty(key) ? this.dps[key].val.toString() : 'None'
                     debugState('MQTT DPS'+key+': '+dpsKeyTopic+' -> ', data)
                     this.publishMqtt(dpsKeyTopic, data, false)
-                    //this.dps[key].updated = false
+                    this.dps[key].updated = false
                 }
             }
         } catch (e) {
