@@ -701,8 +701,12 @@ class TuyaDevice {
 
     // Publish MQTT
     publishMqtt(topic, message, isDebug) {
+        let mqttOptions = {qos: 1}
+        if (this.config.retain || this.config.persist) {
+            mqttOptions.retain = true
+        }
         if (isDebug) { debugState(topic, message) }
-        this.mqttClient.publish(topic, message, { qos: 1 });
+        this.mqttClient.publish(topic, message, mqttOptions);
     }
 }
 
