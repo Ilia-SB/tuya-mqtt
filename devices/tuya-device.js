@@ -217,6 +217,11 @@ class TuyaDevice {
                 if (updated) {
                     debug('Saving persist data for ' + this.toString())
                     let data = JSON.stringify(this.dps)
+                    fs.mkdir('./persist', error => {
+                        if (error) {
+                            debugError('Error creating persist directory:' + error)
+                        }
+                    })
                     fs.writeFile('./persist/' + this.config.id, data, error => {
                         if (error) {
                             debugError('Error saving persist file: ' + error)
