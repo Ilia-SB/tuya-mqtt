@@ -15,6 +15,7 @@ class TuyaDevice {
         this.mqttClient = deviceInfo.mqttClient
         this.topic = deviceInfo.topic
         this.connected = false
+        this.heartbeatTimer = 0
 
         // Build TuyAPI device options from device config info
         this.options = {
@@ -106,6 +107,7 @@ class TuyaDevice {
     async onDisconnected() {
         debug('Disconnected from device ' + this.toString())
         this.connected = false
+        clearInterval(this.heartbeatTimer)
         for (let cid of Object.keys(this.subDevices)) {
             this.subDevices[cid].onDisconnected()
         }
@@ -682,7 +684,7 @@ class TuyaDevice {
     // Simple function to monitor heartbeats to determine if 
     monitorHeartbeat() {
         debug('Starting heartbeat monitoring')
-        setInterval(async () => {
+        this.heartbeatTimer = setInterval(async () => {
             if (this.connected) {
                 if (this.heartbeatsMissed > 3) {
                     debugError('Device id '+this.options.id+' not responding to heartbeats...disconnecting')
