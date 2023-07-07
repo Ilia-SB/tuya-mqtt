@@ -22,7 +22,7 @@ class GenericDevice extends TuyaDevice {
         }
 
         // Restore saved state
-        super.restoreState()
+        this.restoreState()
 
         // Get initial states and start publishing topics
         this.getStates()
