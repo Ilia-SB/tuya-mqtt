@@ -68,7 +68,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
         debug('RequestData for ' + this.toString())
         options.cid = this.cid
         debug(JSON.stringify(options))
-        this.parent.requestData(options)
+        this.parent.get(options)
     }
 
     processCommand(message) {
