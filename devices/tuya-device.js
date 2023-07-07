@@ -353,35 +353,35 @@ class TuyaDevice {
     }
     
     // Initial processing of MQTT commands for all command topics
-    processCommand(message, commandTopic) {
+    processCommand(message) {
         let command
         if (utils.isJsonString(message)) {
             debugCommand('Received MQTT command message is a JSON string')
             command = JSON.parse(message);
+            debugCommand('Received command: ', command.toString())
+            for (let commandTopic of Object.keys(command)) {
+                this.processTopicCommand(command[commandTopic], commandTopic)
+            }
         } else {
             debugCommand('Received MQTT command message is a text string')
-            command = message.toLowerCase()
-        }
-
-        // If get-states command, then updates all states and re-publish topics
-        if (commandTopic === 'command' && command === 'get-states') {
-            // Handle "get-states" command to update device state
             debugCommand('Received command: ', command)
-            this.getStates()
-        } else {
-            // Call device specific command topic handler
-            this.processDeviceCommand(command, commandTopic) 
+            command = message.toLowerCase()
+            switch(command) {
+                case 'get-states':
+                    this.getStates()
+                    break
+                default:
+                    debugCommand('Invalid command')
+            }
         }
     }   
 
     // Process MQTT commands for all device command topics
-    processDeviceCommand(command, commandTopic) {
-        // Determine state topic from command topic to find proper template
-        const stateTopic = commandTopic.replace('command', 'state')
-        const deviceTopic = this.deviceTopics.hasOwnProperty(stateTopic) ? this.deviceTopics[stateTopic] : ''
+    processTopicCommand(command, commandTopic) {
+        const deviceTopic = this.deviceTopics.hasOwnProperty(commandTopic) ? this.deviceTopics[commandTopic] : ''
 
         if (deviceTopic) {
-            debugCommand('Device '+this.options.id+' received command topic: '+commandTopic+', message: '+command)
+            debugCommand('Device ' + this.toString() + ' received command topic: ' + commandTopic + ', message: ' + command)
             let commandResult = this.sendTuyaCommand(command, deviceTopic)
             if (!commandResult) {
                 debugCommand('Command topic '+this.baseTopic+commandTopic+' received invalid value: '+command)
@@ -406,7 +406,7 @@ class TuyaDevice {
     // Process text based Tuya commands via DPS key command topics
     processDpsKeyCommand(message, dpsKey) {
         const dpsMessage = this.parseDpsMessage(message)
-        debugCommand('Received command for DPS'+dpsKey+': ', message)
+        debugCommand('Received command for DPS ' + dpsKey + ': ', message)
         const command = {
             dps: dpsKey,
             set: dpsMessage
@@ -652,11 +652,14 @@ class TuyaDevice {
 
     // Simple function to help debug output 
     toString() {
-        return this.config.name+' (' +(this.options.ip ? this.options.ip+', ' : '')+this.options.id+', '+this.options.key+')'
+        return this.config.name+' (' +(this.options.ip ? this.options.ip+', ' : '')+this.options.id + ')'
     }
 
     set(command) {
-        debug('Set device '+this.options.id+' -> '+JSON.stringify(command))
+        if (this.config.shouldWaitForResponse != undefined) {
+            command.shouldWaitForResponse = this.config.shouldWaitForResponse
+        }
+        debug('Set device ' + this.toString() + ' -> ' + JSON.stringify(command))
         return new Promise((resolve, reject) => {
             this.device.set(command).then((result) => {
                 resolve(result)

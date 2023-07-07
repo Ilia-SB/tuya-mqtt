@@ -156,15 +156,16 @@ const main = async() => {
             message = message.toString()
             const splitTopic = topic.split('/')
             const topicLength = splitTopic.length
-            const commandTopic = splitTopic[topicLength - 1]
-            const deviceTopicLevel = splitTopic[1]
+            const suffix = splitTopic[topicLength - 1]
+            const commandTopic = splitTopic[2]
+            const deviceId = splitTopic[1]
 
             if (topic === 'homeassistant/status' || topic === 'hass/status' ) {
                 debug('Home Assistant state topic '+topic+' received message: '+message)
                 if (message === 'online') {
                     republishDevices()
                 }
-            } else if (commandTopic.includes('command')) {
+            } else if (suffix ==='command') {
                 // If it looks like a valid command topic try to process it
                 debugCommand('Received MQTT message -> ', JSON.stringify({
                     topic: topic,
@@ -172,18 +173,29 @@ const main = async() => {
                 }))
 
                 // Use device topic level to find matching device
-                const device = tuyaDevices.find(d => d.options.name === deviceTopicLevel || d.options.id === deviceTopicLevel)
-                switch (topicLength) {
-                    case 4:
-                        device.processCommand(message, commandTopic)
-                        break;
-                    case 5:
-                        device.processDpsCommand(message)
-                        break;
-                    case 6:
-                        const dpsKey = splitTopic[topicLength-2]
-                        device.processDpsKeyCommand(message, dpsKey)
-                        break;
+                const device = tuyaDevices.find(d => d.options.name === deviceId || d.options.id === deviceId)
+                if(device) {
+                    if(commandTopic === 'dps') {
+                        switch(topicLength) {
+                            case 4:
+                                device.processDpsCommand(message)
+                                break
+                            case 5:
+                                const dpsTopic = splitTopic[3]
+                                device.processDpsKeyCommand(message, dpsTopic)
+                                break
+                        }
+                    } else {
+                        switch(topicLength) {
+                            case 3:
+                                device.processCommand(message)
+                                break
+                            case 4:
+                                device.processTopicCommand(message, commandTopic)
+                                break
+                        }
+                        
+                    }
                 }
             }
         } catch (e) {

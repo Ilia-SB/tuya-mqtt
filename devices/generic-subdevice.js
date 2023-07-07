@@ -1,6 +1,7 @@
 const TuyaDevice = require('./tuya-device')
 const debug = require('debug')('tuya-mqtt:device')
 const debugError = require('debug')('tuya-mqtt:error')
+const debugCommand = require('debug')('tuya-mqtt:command')
 const utils = require('../lib/utils')
 const fs = require('fs')
 
@@ -70,9 +71,16 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.parent.requestData(options)
     }
 
-    processCommand(message, commandTopic) {
-        debug('Passive subdevices do not accept commands')
-        return
+    processCommand(message) {
+        let command = message.toLowerCase()
+        debugCommand('Received command: ', command)
+        switch(command) {
+            case 'get-states':
+                this.getStates()
+                break
+            default:
+                debugCommand('Invalid command')
+        }
     }
 }
 
