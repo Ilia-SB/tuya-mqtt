@@ -53,7 +53,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
             if(!this.config.persist) {
                 // Try to get schema to at least know what DPS keys to get initial update
                 debug('Getting schema for ' + this.toString())
-                this.device.get({"schema": true})
+                this.get({"schema": true})
             }
         }
 
@@ -64,7 +64,7 @@ class GenericPassiveSubDevice extends TuyaDevice {
         this.getStates()
     }
 
-    requestData(options) {
+    get(options) {
         debug('RequestData for ' + this.toString())
         options.cid = this.cid
         debug(JSON.stringify(options))

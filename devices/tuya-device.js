@@ -166,7 +166,7 @@ class TuyaDevice {
             const key = this.deviceTopics[topic].key
             try {
                 debug('Updating dps ' + key)
-                this.requestData({dps: key})
+                this.get({dps: key})
             } catch {
                 debugError('Could not get value for device DPS key '+key)
             }
@@ -175,7 +175,7 @@ class TuyaDevice {
     }
 
     //Wrapper for device.get
-    requestData(options) {
+    get(options) {
         debug('Requesting data for ' + this.toString())
         debug(JSON.stringify(options))
         this.device.get(options)
