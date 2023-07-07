@@ -131,10 +131,19 @@ const main = async() => {
         port: CONFIG.port,
         username: CONFIG.mqtt_user,
         password: CONFIG.mqtt_pass,
+        will: {
+            topic: CONFIG.topic + CONFIG.lwtTopic,
+            payload: 'Offline',
+            qos: CONFIG.qos,
+            retain: true
+        }
     })
 
     mqttClient.on('connect', function (err) {
         debug('Connection established to MQTT server')
+        debug('Publishing LWT')
+        mqttClient.publish(CONFIG.topic + CONFIG.lwtTopic, 'Online', {qos: CONFIG.qos, retain: true})
+        debug('Subscribing to topics')
         let topic = CONFIG.topic + '#'
         mqttClient.subscribe(topic)
         mqttClient.subscribe('homeassistant/status')
