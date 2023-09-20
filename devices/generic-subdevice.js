@@ -5,7 +5,7 @@ const debugCommand = require('debug')('tuya-mqtt:command')
 const utils = require('../lib/utils')
 const fs = require('fs')
 
-class GenericPassiveSubDevice extends TuyaDevice {
+class GenericSubDevice extends TuyaDevice {
     //Passive device like door sensor which is sleeping most of the time. No direct connection will be established
     //data will be passed from parent based on cid value.
     constructor(parent, deviceInfo) {
@@ -84,4 +84,4 @@ class GenericPassiveSubDevice extends TuyaDevice {
     }
 }
 
-module.exports = GenericPassiveSubDevice
+module.exports = GenericSubDevice

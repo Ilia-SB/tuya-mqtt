@@ -9,7 +9,7 @@ const SimpleSwitch = require('./devices/simple-switch')
 const SimpleDimmer = require('./devices/simple-dimmer')
 const RGBTWLight = require('./devices/rgbtw-light')
 const GenericDevice = require('./devices/generic-device')
-const GenericPassiveSubDevice = require('./devices/generic-subdevice')
+const GenericSubDevice = require('./devices/generic-subdevice')
 const utils = require('./lib/utils')
 
 var CONFIG = undefined
@@ -68,12 +68,10 @@ function initDevices(configDevices, mqttClient) {
                     mqttClient: mqttClient,
                     topic: CONFIG.topic
                 }
-                if(configSubDevice.passive) {
-                    const newSubDevice = new GenericPassiveSubDevice(newDevice, deviceInfo)
-                    debug('Added passive subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
-                    newDevice.subDevices[configSubDevice.cid] = newSubDevice
-                    tuyaDevices.push(newSubDevice)
-                }
+                const newSubDevice = new GenericSubDevice(newDevice, deviceInfo)
+                debug('Added subDevice ' + newSubDevice.toString() + ' to ' + newDevice.toString())
+                newDevice.subDevices[configSubDevice.cid] = newSubDevice
+                tuyaDevices.push(newSubDevice)
             }
         }
         newDevice.connectDevice();
