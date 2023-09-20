@@ -52,9 +52,9 @@ class GenericSubDevice extends TuyaDevice {
         } else {
             if(!this.config.persist) {
                 if (!this.isPassive) {
-                    // Try to get schema to at least know what DPS keys to get initial update
-                    debug('Getting schema for ' + this.toString())
-                    this.get()
+                    // No need to get schema. getStates will fetch all the dps
+                    //debug('Getting schema for ' + this.toString())
+                    //this.get()
                 } else {
                     debug('Passive device. Skipping initial update for ' + this.toString())
                 }

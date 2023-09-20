@@ -15,9 +15,9 @@ class GenericDevice extends TuyaDevice {
             this.deviceTopics = this.config.template
         } else {
             if(!this.config.persist) {
-                // Try to get schema to at least know what DPS keys to get initial update
-                debug('Getting schema for ' + this.toString())
-                this.get()
+                // No need to get schema, getStates will fetch all the dps
+                //debug('Getting schema for ' + this.toString())
+                //this.get()
             }
         }
 
