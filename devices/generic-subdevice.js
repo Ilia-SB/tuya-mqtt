@@ -6,13 +6,14 @@ const utils = require('../lib/utils')
 const fs = require('fs')
 
 class GenericSubDevice extends TuyaDevice {
-    //Passive device like door sensor which is sleeping most of the time. No direct connection will be established
-    //data will be passed from parent based on cid value.
+    //Devices connected via Tuya hub. No direct connection is made. Data will be passed from parent based on cid value.
+    //Passive devices like door sensor which are sleeping most of the time.
     constructor(parent, deviceInfo) {
         super(deviceInfo);
         this.cid = deviceInfo.configDevice.cid
         this.parent = parent;
         this.connected = false;
+        this.isPassive = deviceInfo.configDevice.passive
     }
 
     onConnected() {
@@ -40,8 +41,7 @@ class GenericSubDevice extends TuyaDevice {
     }
 
     init() {
-        debug('Generic passive subdevice init() for ' + this.toString())
-
+        debug('Generic ' + this.isPassive ? 'passive ' : '' + 'passive subdevice init() for ' + this.toString())
         this.deviceData.mdl = 'Generic Subdevice'
 
         // Check if custom template in device config
@@ -51,9 +51,15 @@ class GenericSubDevice extends TuyaDevice {
             this.deviceTopics = this.config.template
         } else {
             if(!this.config.persist) {
-                // Try to get schema to at least know what DPS keys to get initial update
-                debug('Getting schema for ' + this.toString())
-                this.get({"schema": true})
+                if (!this.isPassive) {
+                    // Try to get schema to at least know what DPS keys to get initial update
+                    debug('Getting schema for ' + this.toString())
+                    this.get({"schema": true})
+                } else {
+                    debug('Passive device. Skipping initial update for ' + this.toString())
+                }
+            } else {
+                debug('Persisted device, skipping initial update for ' + this.toString())
             }
         }
 

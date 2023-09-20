@@ -71,7 +71,7 @@ class TuyaDevice {
 
         // On connect error call reconnect
         this.device.on('error', async (err) => {
-            debugError(err)
+            debugError(this.toString() + ' ' + err)
             await utils.sleep(1)
             this.reconnect()
         })
@@ -168,7 +168,7 @@ class TuyaDevice {
                 debug('Updating dps ' + key)
                 this.get({dps: key})
             } catch {
-                debugError('Could not get value for device DPS key '+key)
+                debugError('Could not get value for device DPS key ' + key)
             }
         }
         debug('getStates loop completed')
@@ -302,7 +302,7 @@ class TuyaDevice {
                 }
             }
         } catch (e) {
-            debugError(e);
+            debugError(this.toString() + ' ' + e);
         }
     }
     
@@ -678,11 +678,11 @@ class TuyaDevice {
             debug('Found device id '+this.options.id)
             // Attempt connection to device
             this.device.connect().catch((error) => {
-                debugError(error.message)
+                debugError(this.toString() + ' ' + error.message)
                 this.reconnect()
             })
         }).catch(async (error) => {
-            debugError(error.message)
+            debugError(this.toString() + ' ' + error.message)
             debugError('Will attempt to find device again in 60 seconds')
             await utils.sleep(60)
             this.connectDevice()
