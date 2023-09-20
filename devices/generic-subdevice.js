@@ -67,7 +67,9 @@ class GenericSubDevice extends TuyaDevice {
         this.restoreState()
 
         // Get initial states and start publishing topics
-        this.getStates()
+        if(!this.isPassive) {
+            this.getStates()
+        }
     }
 
     get(options) {
