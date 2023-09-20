@@ -41,8 +41,7 @@ class GenericSubDevice extends TuyaDevice {
     }
 
     init() {
-        debug(this.isPassive)
-        debug('Generic ' + (this.isPassive ? 'passive ' : '') + 'passive subdevice init() for ' + this.toString())
+        debug('Generic ' + (this.isPassive ? 'passive ' : '') + 'subdevice init() for ' + this.toString())
         this.deviceData.mdl = 'Generic Subdevice'
 
         // Check if custom template in device config
