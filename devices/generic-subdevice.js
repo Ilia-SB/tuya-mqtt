@@ -41,6 +41,7 @@ class GenericSubDevice extends TuyaDevice {
     }
 
     init() {
+        debug('Init')
         debug('Generic ' + this.isPassive ? 'passive ' : '' + 'passive subdevice init() for ' + this.toString())
         this.deviceData.mdl = 'Generic Subdevice'
 
