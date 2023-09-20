@@ -167,7 +167,7 @@ class TuyaDevice {
     }
 
     //Wrapper for device.get
-    get(options) {
+    get(options={}) {
         debug('Requesting data for ' + this.toString() + (options.cid == undefined ? '' : ' cid: ' + options.cid))
         debug(JSON.stringify(options))
         this.device.get(options)

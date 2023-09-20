@@ -72,7 +72,7 @@ class GenericSubDevice extends TuyaDevice {
         }
     }
 
-    get(options) {
+    get(options={}) {
         debug('RequestData for ' + this.toString())
         options.cid = this.cid
         debug(JSON.stringify(options))
