@@ -163,16 +163,7 @@ class TuyaDevice {
     // Get and update cached values of all configured/known dps value for device
     async getStates() {
         debug('getStates() for ' + this.toString())
-        for (let topic in this.deviceTopics) {
-            const key = this.deviceTopics[topic].key
-            try {
-                debug('Updating dps ' + key)
-                this.get({dps: key})
-            } catch {
-                debugError('Could not get value for device DPS key ' + key)
-            }
-        }
-        debug('getStates loop completed')
+        this.get()
     }
 
     //Wrapper for device.get
