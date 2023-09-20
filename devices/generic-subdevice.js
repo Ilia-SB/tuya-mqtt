@@ -13,7 +13,7 @@ class GenericSubDevice extends TuyaDevice {
         this.cid = deviceInfo.configDevice.cid
         this.parent = parent;
         this.connected = false;
-        this.isPassive = deviceInfo.configDevice.passive
+        this.isPassive = deviceInfo.configDevice.passive ? deviceInfo.configDevice.passive : false
     }
 
     onConnected() {
