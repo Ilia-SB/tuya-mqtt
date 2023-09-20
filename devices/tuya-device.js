@@ -22,7 +22,7 @@ class TuyaDevice {
             id: this.config.id,
             key: this.config.key,
             issueGetOnConnect: false,
-            issueRefreshOnConnect: true
+            issueRefreshOnConnect: this.config.issueRefreshOnConnect == true ? true : false
         }
         if (this.config.name) { this.options.name = this.config.name.toLowerCase().replace(/\s|\+|#|\//g,'_') }
         if (this.config.ip) { 
