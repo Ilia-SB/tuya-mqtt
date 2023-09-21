@@ -79,6 +79,16 @@ class GenericSubDevice extends TuyaDevice {
         this.parent.get(options)
     }
 
+    set(command={}) {
+        if (this.isPassive == true) {
+            debug("Device is passive and does not accept commands. " + this.toString())
+            return
+        }
+        command.cid = this.cid
+        debug('Set device ' + this.toString() + ' -> ' + JSON.stringify(command))
+        this.parent.set(command)
+    }
+
     processCommand(message) {
         let command = message.toLowerCase()
         debugCommand('Received command: ', command)
