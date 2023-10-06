@@ -45,7 +45,6 @@ class GenericSubDevice extends TuyaDevice {
                 if (this.connected) {
                     if (this.issueRefreshOnConnect) {
                         this.parent.refresh({cid: this.cid})
-                        await utils.sleep(1)
                     }
                     this.parent.get({cid: this.cid});
                     if (this.heartbeatsMissed > 3) {
