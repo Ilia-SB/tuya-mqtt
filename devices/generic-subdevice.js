@@ -39,7 +39,7 @@ class GenericSubDevice extends TuyaDevice {
             debug('Starting heartbeat monitoring')
             this.heartbeatTimer = setInterval(async () => {
                 if (this.connected) {
-                    this.parent.refresh({cid: this.cid});
+                    this.parent.get({cid: this.cid});
                     if (this.heartbeatsMissed > 3) {
                         debugError('Subdevice id ' + this.toString() + ' not responding to refresh commands... Reporting as disconnected.')
                         this.onDisconnected() //Just inform about disconnect. We can't actively reconnect
