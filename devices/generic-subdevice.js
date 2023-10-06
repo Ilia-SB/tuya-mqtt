@@ -43,6 +43,7 @@ class GenericSubDevice extends TuyaDevice {
             debug('Starting heartbeat monitoring')
             this.heartbeatTimer = setInterval(async () => {
                 if (this.connected) {
+                    debug('this.issueRefreshOnConnect: ' + this.issueRefreshOnConnect)
                     if (this.issueRefreshOnConnect) {
                         this.parent.refresh({cid: this.cid})
                     }
