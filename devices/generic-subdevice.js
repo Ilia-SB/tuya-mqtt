@@ -22,7 +22,7 @@ class GenericSubDevice extends TuyaDevice {
         debug('Connected to device ' + this.toString())
         this.monitorHeartbeat()
         this.publishMqtt(this.baseTopic + 'status', 'online')
-        if (this.issueRefreshOnConnect) {
+        if (this.config.issueRefreshOnConnect) {
             this.parent.refresh({cid: this.cid})
         }
         this.init()
@@ -43,8 +43,7 @@ class GenericSubDevice extends TuyaDevice {
             debug('Starting heartbeat monitoring')
             this.heartbeatTimer = setInterval(async () => {
                 if (this.connected) {
-                    debug('this.issueRefreshOnConnect: ' + this.issueRefreshOnConnect)
-                    if (this.issueRefreshOnConnect) {
+                    if (this.config.issueRefreshOnConnect) {
                         this.parent.refresh({cid: this.cid})
                     }
                     this.parent.get({cid: this.cid});
