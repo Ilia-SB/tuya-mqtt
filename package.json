@@ -2,7 +2,7 @@
   "name": "tuya-mqtt",
   "version": "3.0.4",
   "description": "Control Tuya devices locally via MQTT",
-  "homepage": "https://github.com/TheAgentK/tuya-mqtt#readme",
+  "homepage": "https://github.com/Ilia-SB/tuya-mqtt",
   "main": "tuya-mqtt.js",
   "files": [
     "devices/*",
@@ -17,8 +17,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
-    "name": "TheAgentK",
-    "email": "lulattsch22@googlemail.com"
+    "name": "Ilia-SB",
+    "email": "ilia.a.ivanov@gmail.com"
   },
   "license": "ISC",
   "dependencies": {
@@ -28,7 +28,7 @@
     "json5": "^2.1.3",
     "mqtt": "^4.2.6",
     "supports-color": "^8.1.0",
-    "tuyapi": "^7.5.2",
+    "tuyapi": "Ilia-SB/tuyapi#no-disconnect-on-ping^7.5.2",
     "mathjs": "8.1.1"
   },
   "repository": {

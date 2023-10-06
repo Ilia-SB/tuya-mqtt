@@ -1,3 +1,8 @@
+This is a fork of https://github.com/TheAgentK/tuya-mqtt modified to work with devices connected via tuya-hub. Only tested with a small number of devices I own.
+I changed the mqtt topic names structure, so compatability might be broken. It also relies on my fork of TuyAPI.
+Otherwise, I tried to keep it compatible with the original version.
+
+Below is the description from the original repo.
 # tuya-mqtt
 
 # !!!! Important Note !!!!
