@@ -173,6 +173,13 @@ class TuyaDevice {
         this.device.get(options)
     }
 
+    //Wrapper for device.refresh
+    refresh(options={}) {
+        debug('Requesting refresh for ' + this.toString() + (options.cid == undefined ? '' : ' cid: ' + options.cid))
+        debug(JSON.stringify(options))
+        this.device.refresh(options)
+    }
+
     // Update cached DPS values on data updates
     updateState(data) {
         let updated = false

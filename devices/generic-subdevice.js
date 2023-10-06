@@ -19,6 +19,7 @@ class GenericSubDevice extends TuyaDevice {
     onConnected() {
         this.connected = true;
         debug('Connected to device ' + this.toString())
+        this.monitorHeartbeat()
         this.publishMqtt(this.baseTopic + 'status', 'online')
         this.init()
     }
@@ -32,11 +33,29 @@ class GenericSubDevice extends TuyaDevice {
     }
 
     monitorHeartbeat() {
-        return;
+        if (this.isPassive == true) {
+            return;
+        } else {
+            debug('Starting heartbeat monitoring')
+            this.heartbeatTimer = setInterval(async () => {
+                if (this.connected) {
+                    if (this.heartbeatsMissed > 3) {
+                        debugError('Subdevice id ' + this.options.id + ' not responding to refresh commands... Reporting as disconnected.')
+                        this.onDisconnected() //Just inform about disconnect. We can't actively reconnect
+                    } else if (this.heartbeatsMissed > 0) {
+                        const errMessage = this.heartbeatsMissed > 1 ? " times" : " time"
+                        debugError('Subdevice id ' + this.options.id+' has not responded to refresh command' + this.heartbeatsMissed + errMessage)                
+                    }
+                    this.heartbeatsMissed++
+                }
+            }, 10000)
+            this.parent.refresh({cid: this.cid});
+        }
     }
 
     onData(data) {
         debug('Received data from parent device ' + this.parent.options.id + ' ->', JSON.stringify(data.dps));
+        this.heartbeatsMissed = 0
         this.updateState(data)
     }
 
