@@ -18,6 +18,7 @@ class GenericSubDevice extends TuyaDevice {
 
     onConnected() {
         this.connected = true;
+        this.heartbeatsMissed = 0;
         debug('Connected to device ' + this.toString())
         this.monitorHeartbeat()
         this.publishMqtt(this.baseTopic + 'status', 'online')
